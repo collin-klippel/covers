@@ -1,16 +1,26 @@
-import { join } from 'path';
-import AutoLoad, {AutoloadPluginOptions} from '@fastify/autoload';
+import { Client } from "pg";
 import { FastifyPluginAsync } from 'fastify';
+import { join } from 'path';
+import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload';
+
+require('dotenv').config()
+
+export const db = new Client({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+});
 
 export type AppOptions = {
   // Place your custom options for app below here.
 } & Partial<AutoloadPluginOptions>;
 
 const app: FastifyPluginAsync<AppOptions> = async (
-    fastify,
-    opts
+  fastify,
+  opts
 ): Promise<void> => {
   // Place here your custom code!
+  await db.connect();
 
   // Do not touch the following lines
 
@@ -28,7 +38,6 @@ const app: FastifyPluginAsync<AppOptions> = async (
     dir: join(__dirname, 'routes'),
     options: opts
   })
-
 };
 
 export default app;
